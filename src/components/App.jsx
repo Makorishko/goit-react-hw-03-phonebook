@@ -12,7 +12,7 @@ export class App extends Component {
 
   addContact = newContact => {
     const isSame = this.state.contacts.find(
-      contact => contact.name === newContact.name
+      contact => contact.name.toLowerCase() === newContact.name.toLowerCase()
     );
 
     if (isSame) {
@@ -44,10 +44,10 @@ export class App extends Component {
     );
   };
 
-  componentDidUpdate() {
-    localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
-
- 
+  componentDidUpdate(_, prevState) {
+    if (this.state.contacts !== prevState.contacts) {
+      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+    }
   }
 
   componentDidMount() {
@@ -55,8 +55,7 @@ export class App extends Component {
     console.log('componentDidMount', savedContacts);
 
     if (savedContacts && savedContacts.length) {
-      this.setState(prevState => ({
-        ...prevState,
+      this.setState(() => ({
         contacts: JSON.parse(savedContacts),
       }));
     }
